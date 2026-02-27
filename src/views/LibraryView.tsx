@@ -240,7 +240,7 @@ export default function LibraryView() {
                   <h3 style={{ marginBottom: '2px' }}>
                     {isExpanded ? '▾' : '▸'} {sourceName}
                   </h3>
-                  <span style={{ fontSize: '13px', color: '#888' }}>
+                  <span style={{ fontSize: '13px', color: '#7a7a92' }}>
                     {totalCards} cards &middot; {Object.keys(topics).length} topics
                   </span>
                 </div>
@@ -248,7 +248,7 @@ export default function LibraryView() {
 
               {isExpanded && Object.entries(topics).map(([topicName, topicCards]) => (
                 <div key={topicName} style={{ marginTop: '12px', marginLeft: '16px' }}>
-                  <h4 style={{ fontSize: '14px', color: '#3a3a6a', marginBottom: '8px' }}>
+                  <h4 style={{ fontSize: '14px', color: '#8888cc', marginBottom: '8px' }}>
                     {topicName} ({topicCards.length} cards)
                   </h4>
                   <table className="card-table">
@@ -285,7 +285,7 @@ export default function LibraryView() {
                           <td>{stepLabel(card)}</td>
                           <td style={{ position: 'relative' }}>
                             <span
-                              style={{ cursor: 'pointer', color: '#4a5cf0', fontSize: '12px' }}
+                              style={{ cursor: 'pointer', color: '#818cf8', fontSize: '12px' }}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setReschedulingCard(reschedulingCard === card.id ? null : card.id)
@@ -296,14 +296,14 @@ export default function LibraryView() {
                             {reschedulingCard === card.id && (
                               <div
                                 style={{
-                                  position: 'absolute', zIndex: 10, background: '#fff',
-                                  border: '1px solid #ddd', borderRadius: '8px', padding: '8px',
-                                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)', marginTop: '4px',
+                                  position: 'absolute', zIndex: 10, background: '#1a1a2e',
+                                  border: '1px solid #3a3a5a', borderRadius: '8px', padding: '8px',
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.5)', marginTop: '4px',
                                   left: 0, top: '100%',
                                 }}
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px' }}>Reschedule:</div>
+                                <div style={{ fontSize: '11px', color: '#7a7a92', marginBottom: '6px' }}>Reschedule:</div>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                                   {[
                                     { label: '1d', days: 1 },
@@ -368,37 +368,37 @@ export default function LibraryView() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Edit Card</h3>
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Question</label>
+              <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Question</label>
               <textarea
                 value={editQuestion}
                 onChange={(e) => setEditQuestion(e.target.value)}
                 rows={3}
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #3a3a5a', fontSize: '14px', boxSizing: 'border-box', background: '#16162a', color: '#e0e0e8' }}
               />
             </div>
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Answer</label>
+              <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Answer</label>
               <textarea
                 value={editAnswer}
                 onChange={(e) => setEditAnswer(e.target.value)}
                 rows={4}
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #3a3a5a', fontSize: '14px', boxSizing: 'border-box', background: '#16162a', color: '#e0e0e8' }}
               />
             </div>
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Explanation</label>
+              <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Explanation</label>
               <textarea
                 value={editExplanation}
                 onChange={(e) => setEditExplanation(e.target.value)}
                 rows={2}
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #3a3a5a', fontSize: '14px', boxSizing: 'border-box', background: '#16162a', color: '#e0e0e8' }}
               />
             </div>
             <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
               <div>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Type</label>
+                <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Type</label>
                 <select value={editType} onChange={(e) => setEditType(e.target.value)}
-                  style={{ padding: '6px', borderRadius: '6px', border: '1px solid #ddd' }}>
+                  style={{ padding: '6px', borderRadius: '6px', border: '1px solid #3a3a5a', background: '#16162a', color: '#e0e0e8' }}>
                   <option value="recall">Recall</option>
                   <option value="conceptual">Conceptual</option>
                   <option value="mcq">MCQ</option>
@@ -407,9 +407,9 @@ export default function LibraryView() {
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Difficulty</label>
+                <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Difficulty</label>
                 <select value={editDifficulty} onChange={(e) => setEditDifficulty(e.target.value)}
-                  style={{ padding: '6px', borderRadius: '6px', border: '1px solid #ddd' }}>
+                  style={{ padding: '6px', borderRadius: '6px', border: '1px solid #3a3a5a', background: '#16162a', color: '#e0e0e8' }}>
                   <option value="foundational">Foundational</option>
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
@@ -429,26 +429,26 @@ export default function LibraryView() {
         <div className="modal-overlay" onClick={() => setShowMergeDialog(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '700px' }}>
             <h3>Merge {selectedCards.size} Cards</h3>
-            <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>
+            <p style={{ fontSize: '13px', color: '#9898b0', marginBottom: '12px' }}>
               The first selected card will be kept and updated. All other selected cards will be deleted.
               Edit the merged content below before confirming.
             </p>
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Merged Question</label>
+              <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Merged Question</label>
               <textarea
                 value={mergeQuestion}
                 onChange={(e) => setMergeQuestion(e.target.value)}
                 rows={5}
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #3a3a5a', fontSize: '14px', boxSizing: 'border-box', background: '#16162a', color: '#e0e0e8' }}
               />
             </div>
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Merged Answer</label>
+              <label style={{ fontSize: '12px', color: '#9898b0', display: 'block', marginBottom: '4px' }}>Merged Answer</label>
               <textarea
                 value={mergeAnswer}
                 onChange={(e) => setMergeAnswer(e.target.value)}
                 rows={6}
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #3a3a5a', fontSize: '14px', boxSizing: 'border-box', background: '#16162a', color: '#e0e0e8' }}
               />
             </div>
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>

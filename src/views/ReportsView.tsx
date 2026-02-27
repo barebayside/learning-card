@@ -99,7 +99,7 @@ export default function ReportsView() {
     return (
       <div className="reports-view">
         <h1>Reports</h1>
-        <p style={{ color: '#888' }}>Loading reports...</p>
+        <p style={{ color: '#7a7a92' }}>Loading reports...</p>
       </div>
     )
   }
@@ -115,25 +115,25 @@ export default function ReportsView() {
           <h2>Schedule Overview</h2>
           <div className="stats-grid" style={{ marginBottom: '8px' }}>
             <div className="card stat-card">
-              <div className="stat-number" style={{ color: '#d32f2f' }}>{schedule.due_today}</div>
+              <div className="stat-number" style={{ color: '#f87171' }}>{schedule.due_today}</div>
               <div className="stat-label">Due Today</div>
             </div>
             <div className="card stat-card">
-              <div className="stat-number" style={{ color: '#e65100' }}>{schedule.due_this_week}</div>
+              <div className="stat-number" style={{ color: '#fb923c' }}>{schedule.due_this_week}</div>
               <div className="stat-label">Due This Week</div>
             </div>
             <div className="card stat-card">
-              <div className="stat-number" style={{ color: '#b88a00' }}>{schedule.due_this_month}</div>
+              <div className="stat-number" style={{ color: '#facc15' }}>{schedule.due_this_month}</div>
               <div className="stat-label">Due This Month</div>
             </div>
           </div>
           <div className="stats-grid">
             <div className="card stat-card">
-              <div className="stat-number" style={{ color: '#1565c0' }}>{schedule.due_later}</div>
+              <div className="stat-number" style={{ color: '#60a5fa' }}>{schedule.due_later}</div>
               <div className="stat-label">Due Later</div>
             </div>
             <div className="card stat-card">
-              <div className="stat-number" style={{ color: '#2d8a4e' }}>{schedule.new_cards}</div>
+              <div className="stat-number" style={{ color: '#4ade80' }}>{schedule.new_cards}</div>
               <div className="stat-label">New (Unseen)</div>
             </div>
             <div className="card stat-card">
@@ -148,7 +148,7 @@ export default function ReportsView() {
       <div className="reports-section">
         <h2>Daily Activity (Last 30 Days)</h2>
         {dailyStats.length === 0 && chartData.every((d) => d.reviews === 0) ? (
-          <p style={{ color: '#888', fontSize: '14px' }}>No review activity yet. Start studying to see your progress here.</p>
+          <p style={{ color: '#7a7a92', fontSize: '14px' }}>No review activity yet. Start studying to see your progress here.</p>
         ) : (
           <div className="daily-chart">
             <div className="chart-bars">
@@ -180,7 +180,7 @@ export default function ReportsView() {
       <div className="reports-section">
         <h2>Topic Performance</h2>
         {sortedTopics.length === 0 ? (
-          <p style={{ color: '#888', fontSize: '14px' }}>No topics found. Import content and generate questions to see topic performance.</p>
+          <p style={{ color: '#7a7a92', fontSize: '14px' }}>No topics found. Import content and generate questions to see topic performance.</p>
         ) : (
           <table className="card-table reports-table">
             <thead>
@@ -213,13 +213,13 @@ export default function ReportsView() {
                   <td style={{ textAlign: 'right' }}>
                     {topic.total_reviews > 0 ? (
                       <span style={{
-                        color: topic.accuracy_pct >= 80 ? '#2d8a4e' : topic.accuracy_pct >= 50 ? '#b88a00' : '#d32f2f',
+                        color: topic.accuracy_pct >= 80 ? '#4ade80' : topic.accuracy_pct >= 50 ? '#facc15' : '#f87171',
                         fontWeight: 600,
                       }}>
                         {topic.accuracy_pct}%
                       </span>
                     ) : (
-                      <span style={{ color: '#ccc' }}>--</span>
+                      <span style={{ color: '#4a4a62' }}>--</span>
                     )}
                   </td>
                   <td style={{ textAlign: 'right' }}>

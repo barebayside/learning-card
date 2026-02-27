@@ -46,6 +46,18 @@ export default function App() {
         {currentView === 'reports' && <ReportsView />}
         {currentView === 'settings' && <SettingsView />}
       </main>
+      <nav className="mobile-bottom-nav">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            className={`mobile-nav-item ${currentView === item.id ? 'active' : ''}`}
+            onClick={() => setCurrentView(item.id)}
+          >
+            <span className="mobile-nav-icon">{item.icon}</span>
+            <span className="mobile-nav-label">{item.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   )
 }

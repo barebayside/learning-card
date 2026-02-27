@@ -165,7 +165,7 @@ export default function TutorSidebar({ cardId, onClose }: Props) {
 
       <div className="tutor-messages">
         {messages.length === 0 && (
-          <div style={{ color: '#888', fontSize: '13px', textAlign: 'center', padding: '20px' }}>
+          <div style={{ color: '#7a7a92', fontSize: '13px', textAlign: 'center', padding: '20px' }}>
             Ask the AI tutor anything about this question or topic.
           </div>
         )}
@@ -184,7 +184,7 @@ export default function TutorSidebar({ cardId, onClose }: Props) {
         </div>
       )}
       {voiceError && (
-        <div style={{ margin: '0 12px 4px', fontSize: '11px', color: '#d32f2f' }}>{voiceError}</div>
+        <div style={{ margin: '0 12px 4px', fontSize: '11px', color: '#f87171' }}>{voiceError}</div>
       )}
       <div className="tutor-input-area">
         <input

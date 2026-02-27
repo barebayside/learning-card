@@ -455,7 +455,7 @@ export default function StudyView() {
           </div>
         ) : (
           <>
-            <p style={{ color: '#666', marginBottom: '16px' }}>
+            <p style={{ color: '#9898b0', marginBottom: '16px' }}>
               Choose a subject to study, or study everything at once.
             </p>
 
@@ -499,7 +499,7 @@ export default function StudyView() {
                   {expandedSource === source.source_id && (
                     <div className="topic-list-expand">
                       {loadingTopics === source.source_id && (
-                        <div style={{ padding: '12px 16px', color: '#888', fontSize: '13px' }}>Loading topics...</div>
+                        <div style={{ padding: '12px 16px', color: '#7a7a92', fontSize: '13px' }}>Loading topics...</div>
                       )}
                       {topicStats[source.source_id]?.map((topic) => (
                         <div key={topic.topic_id} className="topic-item">
@@ -523,7 +523,7 @@ export default function StudyView() {
                         </div>
                       ))}
                       {topicStats[source.source_id]?.length === 0 && (
-                        <div style={{ padding: '12px 16px', color: '#888', fontSize: '13px' }}>No topics found.</div>
+                        <div style={{ padding: '12px 16px', color: '#7a7a92', fontSize: '13px' }}>No topics found.</div>
                       )}
                     </div>
                   )}
@@ -616,7 +616,7 @@ export default function StudyView() {
           <span className={`badge badge-${currentCard.difficulty_tier}`}>
             {currentCard.difficulty_tier}
           </span>
-          <span className="badge" style={{ background: '#f0f0f5', color: '#555' }}>
+          <span className="badge" style={{ background: '#222240', color: '#9898b0' }}>
             Step {step}/{INTERVAL_LABELS.length - 1}
           </span>
           <span style={{ flex: 1 }} />
@@ -720,7 +720,7 @@ export default function StudyView() {
         {/* Correct answer revealed */}
         {showAnswer && (
           <div className="answer-section" style={{ marginTop: '12px' }}>
-            <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px', fontWeight: 600 }}>
+            <div style={{ fontSize: '12px', color: '#7a7a92', marginBottom: '4px', fontWeight: 600 }}>
               CORRECT ANSWER:
             </div>
             <div className="answer-text">{renderTextWithImages(currentCard.answer_text, currentCard.source_id)}</div>
@@ -838,13 +838,13 @@ export default function StudyView() {
           <button className="close-btn" onClick={() => setShowContextPanel(false)}>x</button>
         </div>
         <div className="modal-body">
-          {loadingContext && <p style={{ color: '#888' }}>Loading cards...</p>}
+          {loadingContext && <p style={{ color: '#7a7a92' }}>Loading cards...</p>}
           {!loadingContext && topicCards.length === 0 && (
-            <p style={{ color: '#888' }}>No other cards in this topic.</p>
+            <p style={{ color: '#7a7a92' }}>No other cards in this topic.</p>
           )}
           {!loadingContext && topicCards.length > 0 && (
             <>
-              <p style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>
+              <p style={{ fontSize: '13px', color: '#9898b0', marginBottom: '8px' }}>
                 Select cards to merge with the current card. The current card is highlighted.
               </p>
               <div className="context-cards-list">
@@ -866,7 +866,7 @@ export default function StudyView() {
                             onClick={(e) => e.stopPropagation()}
                           />
                         )}
-                        {isCurrent && <span className="badge" style={{ background: '#2563eb', color: '#fff', fontSize: '10px' }}>Current</span>}
+                        {isCurrent && <span className="badge" style={{ background: '#3b82f6', color: '#fff', fontSize: '10px' }}>Current</span>}
                         <span className="badge badge-type" style={{ fontSize: '10px' }}>{tc.question_type}</span>
                       </div>
                       <div className="context-card-question">{tc.question_text}</div>
@@ -880,7 +880,7 @@ export default function StudyView() {
         </div>
         {selectedForMerge.length > 0 && (
           <div className="modal-footer">
-            <span style={{ fontSize: '13px', color: '#666' }}>
+            <span style={{ fontSize: '13px', color: '#9898b0' }}>
               {selectedForMerge.length} card{selectedForMerge.length > 1 ? 's' : ''} selected to merge
             </span>
             <button className="btn btn-primary" onClick={handleMerge} disabled={merging}>

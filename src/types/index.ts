@@ -74,3 +74,8 @@ export interface TutorMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
+export interface ParseResult {
+  text: string;
+  images: Map<string, Uint8Array>;
+}

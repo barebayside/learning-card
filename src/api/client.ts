@@ -34,7 +34,7 @@ export async function importFile(file: File) {
   }
 
   // Parse file client-side
-  const rawText = await parseFile(ext, bytes)
+  const { text: rawText, images } = await parseFile(ext, bytes)
 
   if (!rawText.trim()) {
     throw new Error('No text content could be extracted from this file.')
@@ -58,12 +58,32 @@ export async function importFile(file: File) {
 
   if (error) throw new Error(error.message)
 
+  // Upload extracted images to Supabase Storage
+  let imageCount = 0
+  if (images.size > 0) {
+    for (const [filename, imgBytes] of images) {
+      const ext = filename.split('.').pop() || 'png'
+      const contentType = `image/${ext === 'jpg' ? 'jpeg' : ext}`
+      const storagePath = `${source.id}/${filename}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from('content-images')
+        .upload(storagePath, imgBytes, { contentType, upsert: true })
+
+      if (uploadErr) {
+        console.warn(`Failed to upload image ${filename}:`, uploadErr.message)
+      } else {
+        imageCount++
+      }
+    }
+  }
+
   return {
     source_id: source.id,
     filename: file.name,
     file_type: ext,
     word_count: wordCount,
-    image_count: 0,
+    image_count: imageCount,
   }
 }
 

@@ -187,8 +187,8 @@ export default function ImportView() {
                   </div>
 
                   {isExpanded && topics && (
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #eee' }}>
-                      <div style={{ fontSize: '13px', color: '#555', marginBottom: '8px' }}>
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #222240' }}>
+                      <div style={{ fontSize: '13px', color: '#9898b0', marginBottom: '8px' }}>
                         {topics.length} topic{topics.length !== 1 ? 's' : ''} detected:
                       </div>
                       {topics.map((topic) => (
@@ -196,14 +196,14 @@ export default function ImportView() {
                           key={topic.id}
                           style={{
                             padding: '8px 12px',
-                            background: '#f8f8fc',
+                            background: '#222240',
                             borderRadius: '6px',
                             marginBottom: '6px',
                             fontSize: '13px',
                           }}
                         >
                           <strong>{topic.title}</strong>
-                          <span style={{ color: '#888', marginLeft: '8px' }}>
+                          <span style={{ color: '#7a7a92', marginLeft: '8px' }}>
                             {topic.word_count} words
                           </span>
                         </div>

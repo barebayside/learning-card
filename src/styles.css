@@ -291,6 +291,41 @@ body {
   margin-top: 2px;
 }
 
+/* Individual card list under expanded topic */
+.topic-cards-expand {
+  background: #12122a;
+  border-top: 1px solid #222240;
+  margin-left: 16px;
+}
+
+.topic-card-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid #1a1a3a;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.topic-card-item:hover {
+  background: #1a1a40;
+}
+
+.topic-card-item:last-child {
+  border-bottom: none;
+}
+
+.topic-card-question {
+  font-size: 13px;
+  color: #c0c0d8;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.topic-card-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .btn {
   padding: 8px 16px;
   border: none;

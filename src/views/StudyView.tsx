@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { startStudySession, gradeCard, endStudySession, getSourcesSummary, getTopicStats, checkAnswer, getCardsByTopic, updateCard, mergeCards, getImageUrl } from '../api/client'
+import { startStudySession, createStudySession, gradeCard, endStudySession, getSourcesSummary, getTopicStats, checkAnswer, getCardsByTopic, updateCard, mergeCards, getImageUrl } from '../api/client'
 import TutorSidebar from '../components/TutorSidebar'
 import type { Card } from '../types'
 
@@ -82,6 +82,9 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
   const [expandedSource, setExpandedSource] = useState<number | null>(null)
   const [topicStats, setTopicStats] = useState<Record<number, TopicStat[]>>({})
   const [loadingTopics, setLoadingTopics] = useState<number | null>(null)
+  const [expandedTopic, setExpandedTopic] = useState<number | null>(null)
+  const [pickerTopicCards, setPickerTopicCards] = useState<Record<number, Card[]>>({})
+  const [loadingTopicCards, setLoadingTopicCards] = useState<number | null>(null)
   const [cards, setCards] = useState<Card[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
@@ -156,6 +159,65 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
       }
     }
   }
+
+  async function toggleTopicCards(topicId: number) {
+    if (expandedTopic === topicId) {
+      setExpandedTopic(null)
+      return
+    }
+    setExpandedTopic(topicId)
+    if (!pickerTopicCards[topicId]) {
+      setLoadingTopicCards(topicId)
+      try {
+        const cards = await getCardsByTopic(topicId)
+        setPickerTopicCards((prev) => ({ ...prev, [topicId]: cards }))
+      } catch (e: any) {
+        setError(e.message)
+      } finally {
+        setLoadingTopicCards(null)
+      }
+    }
+  }
+
+  async function startSessionWithCard(card: Card, topicId: number) {
+    setError('')
+    try {
+      await createStudySession()
+      // Get all cards for this topic to allow studying through them, starting from the selected card
+      let allCards = pickerTopicCards[topicId]
+      if (!allCards) {
+        allCards = await getCardsByTopic(topicId)
+        setPickerTopicCards((prev) => ({ ...prev, [topicId]: allCards! }))
+      }
+      // Find the topic title from topicStats
+      let topicTitle = 'Unknown Topic'
+      for (const stats of Object.values(topicStatsList)) {
+        const found = stats.find((t) => t.topic_id === topicId)
+        if (found) { topicTitle = found.topic_title; break }
+      }
+      // Add topic_title to cards for display
+      const enriched = allCards.map((c) => ({ ...c, topic_title: topicTitle }))
+      const startIdx = enriched.findIndex((c) => c.id === card.id)
+      // Reorder so selected card is first
+      const reordered = startIdx > 0
+        ? [...enriched.slice(startIdx), ...enriched.slice(0, startIdx)]
+        : enriched
+      setCards(reordered)
+      setCurrentIndex(0)
+      resetCardState()
+      setSessionActive(true)
+      setSessionComplete(false)
+      setPicking(false)
+      setCardsStudied(0)
+      setCardsCorrect(0)
+      setCardStartTime(Date.now())
+    } catch (e: any) {
+      setError(e.message)
+    }
+  }
+
+  // Alias for topic stats lookup
+  const topicStatsList = topicStats
 
   async function startSession(sourceId?: number, topicId?: number, dueOnly?: boolean) {
     setError('')
@@ -514,24 +576,65 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
                         <div style={{ padding: '12px 16px', color: '#7a7a92', fontSize: '13px' }}>Loading topics...</div>
                       )}
                       {topicStats[source.source_id]?.map((topic) => (
-                        <div key={topic.topic_id} className="topic-item">
-                          <div className="topic-info">
-                            <div className="topic-name">{topic.topic_title}</div>
-                            <div className="topic-stats-line">
-                              {topic.card_count} cards
-                              {topic.due_count > 0 && <> · <strong>{topic.due_count} due</strong></>}
-                              {topic.due_count === 0 && topic.new_count > 0 && <> · {topic.new_count} new</>}
-                              {topic.learning_count > 0 && <> · {topic.learning_count} learning</>}
+                        <div key={topic.topic_id}>
+                          <div className="topic-item">
+                            <div
+                              className="topic-info"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => toggleTopicCards(topic.topic_id)}
+                            >
+                              <div className="topic-name">
+                                <span style={{ marginRight: '6px', fontSize: '10px' }}>
+                                  {expandedTopic === topic.topic_id ? '▼' : '▶'}
+                                </span>
+                                {topic.topic_title}
+                              </div>
+                              <div className="topic-stats-line">
+                                {topic.card_count} cards
+                                {topic.due_count > 0 && <> · <strong>{topic.due_count} due</strong></>}
+                                {topic.due_count === 0 && topic.new_count > 0 && <> · {topic.new_count} new</>}
+                                {topic.learning_count > 0 && <> · {topic.learning_count} learning</>}
+                              </div>
                             </div>
+                            <button
+                              className="btn btn-secondary"
+                              onClick={() => startSession(undefined, topic.topic_id)}
+                              disabled={topic.due_count === 0 && topic.new_count === 0 && topic.learning_count === 0}
+                              style={{ fontSize: '12px', padding: '6px 12px' }}
+                            >
+                              Study Topic
+                            </button>
                           </div>
-                          <button
-                            className="btn btn-secondary"
-                            onClick={() => startSession(undefined, topic.topic_id)}
-                            disabled={topic.due_count === 0 && topic.new_count === 0 && topic.learning_count === 0}
-                            style={{ fontSize: '12px', padding: '6px 12px' }}
-                          >
-                            Study Topic
-                          </button>
+
+                          {/* Expanded card list for this topic */}
+                          {expandedTopic === topic.topic_id && (
+                            <div className="topic-cards-expand">
+                              {loadingTopicCards === topic.topic_id && (
+                                <div style={{ padding: '8px 16px', color: '#7a7a92', fontSize: '12px' }}>Loading cards...</div>
+                              )}
+                              {pickerTopicCards[topic.topic_id]?.map((card) => (
+                                <div
+                                  key={card.id}
+                                  className="topic-card-item"
+                                  onClick={() => startSessionWithCard(card, topic.topic_id)}
+                                >
+                                  <div className="topic-card-question">
+                                    {card.question_text.length > 80
+                                      ? card.question_text.slice(0, 80) + '...'
+                                      : card.question_text}
+                                  </div>
+                                  <div className="topic-card-meta">
+                                    <span className="badge badge-type" style={{ fontSize: '10px' }}>{card.question_type}</span>
+                                    <span className={`badge badge-${card.difficulty_tier}`} style={{ fontSize: '10px' }}>{card.difficulty_tier}</span>
+                                    <span style={{ fontSize: '11px', color: '#7a7a92' }}>{card.card_state}</span>
+                                  </div>
+                                </div>
+                              ))}
+                              {pickerTopicCards[topic.topic_id]?.length === 0 && (
+                                <div style={{ padding: '8px 16px', color: '#7a7a92', fontSize: '12px' }}>No cards in this topic.</div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                       {topicStats[source.source_id]?.length === 0 && (

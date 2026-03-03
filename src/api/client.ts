@@ -228,6 +228,21 @@ let sessionCardsStudied = 0
 let sessionCardsCorrect = 0
 let sessionTotalTimeMs = 0
 
+export async function createStudySession() {
+  const { data: session, error: sessErr } = await supabase
+    .from('study_sessions')
+    .insert({ status: 'active' })
+    .select('id')
+    .single()
+
+  if (sessErr) throw new Error(sessErr.message)
+  currentSessionId = session.id
+  sessionCardsStudied = 0
+  sessionCardsCorrect = 0
+  sessionTotalTimeMs = 0
+  return session.id
+}
+
 export async function startStudySession(sourceId?: number, topicId?: number, dueOnly?: boolean) {
   // Create session
   const { data: session, error: sessErr } = await supabase

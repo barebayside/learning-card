@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { getCardStats } from '../api/client'
 import type { CardStats } from '../types'
 
+type View = 'dashboard' | 'import' | 'study' | 'library' | 'reports' | 'settings'
+
 interface Props {
-  onNavigate: (view: 'dashboard' | 'import' | 'study' | 'library' | 'reports' | 'settings') => void
+  onNavigate: (view: View, options?: { autoStart?: boolean }) => void
 }
 
 export default function DashboardView({ onNavigate }: Props) {
@@ -32,10 +34,14 @@ export default function DashboardView({ onNavigate }: Props) {
       {stats && (
         <>
           <div className="stats-grid">
-            <div className="card stat-card">
+            <button
+              className="card stat-card stat-card-clickable"
+              onClick={() => stats.due_count > 0 && onNavigate('study', { autoStart: true })}
+              disabled={stats.due_count === 0}
+            >
               <div className="stat-number">{stats.due_count}</div>
               <div className="stat-label">Cards Due</div>
-            </div>
+            </button>
             <div className="card stat-card">
               <div className="stat-number">{stats.reviews_today}</div>
               <div className="stat-label">Reviewed Today</div>

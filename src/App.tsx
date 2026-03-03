@@ -11,6 +11,12 @@ type View = 'dashboard' | 'import' | 'study' | 'library' | 'reports' | 'settings
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard')
+  const [studyAutoStart, setStudyAutoStart] = useState(false)
+
+  function navigateTo(view: View, options?: { autoStart?: boolean }) {
+    setStudyAutoStart(view === 'study' && !!options?.autoStart)
+    setCurrentView(view)
+  }
 
   const navItems: { id: View; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
@@ -39,9 +45,9 @@ export default function App() {
         ))}
       </nav>
       <main className="main-content">
-        {currentView === 'dashboard' && <DashboardView onNavigate={setCurrentView} />}
+        {currentView === 'dashboard' && <DashboardView onNavigate={navigateTo} />}
         {currentView === 'import' && <ImportView />}
-        {currentView === 'study' && <StudyView />}
+        {currentView === 'study' && <StudyView autoStart={studyAutoStart} onAutoStartConsumed={() => setStudyAutoStart(false)} />}
         {currentView === 'library' && <LibraryView />}
         {currentView === 'reports' && <ReportsView />}
         {currentView === 'settings' && <SettingsView />}

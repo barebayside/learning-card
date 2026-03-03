@@ -71,7 +71,12 @@ function renderTextWithImages(text: string, sourceId?: number): React.ReactNode 
   return <>{parts}</>
 }
 
-export default function StudyView() {
+interface StudyViewProps {
+  autoStart?: boolean
+  onAutoStartConsumed?: () => void
+}
+
+export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewProps) {
   const [sources, setSources] = useState<SourceSummary[]>([])
   const [selectedSource, setSelectedSource] = useState<number | undefined>(undefined)
   const [expandedSource, setExpandedSource] = useState<number | null>(null)
@@ -116,6 +121,13 @@ export default function StudyView() {
   useEffect(() => {
     loadSources()
   }, [])
+
+  useEffect(() => {
+    if (autoStart) {
+      onAutoStartConsumed?.()
+      startSession(undefined)
+    }
+  }, [autoStart])
 
   async function loadSources() {
     try {
@@ -747,39 +759,62 @@ export default function StudyView() {
         </div>
       )}
 
-      {/* Grade buttons — shown after answer is revealed */}
-      {showAnswer && (
-        <>
-          <div className="study-actions" style={{ marginTop: '12px' }}>
-            {[
-              { grade: 0, label: 'Again', interval: intervals.again, cls: 'btn-again' },
-              { grade: 1, label: 'Hard', interval: intervals.hard, cls: 'btn-hard' },
-              { grade: 2, label: 'Good', interval: intervals.good, cls: 'btn-good' },
-              { grade: 3, label: 'Easy', interval: intervals.easy, cls: 'btn-easy' },
-            ].map((btn) => (
-              <button
-                key={btn.grade}
-                className={`btn ${btn.cls} ${checkResult?.suggested_grade === btn.grade ? 'suggested-grade' : ''}`}
-                onClick={() => handleGrade(btn.grade)}
-              >
-                {btn.label}
-                <span className="grade-label">{btn.interval} ({btn.grade + 1})</span>
-              </button>
-            ))}
-          </div>
+      {/* Post-answer actions */}
+      {showAnswer && (() => {
+        const gradeLabelMap: Record<number, string> = { 0: 'Again', 1: 'Hard', 2: 'Good', 3: 'Easy' }
+        const autoGrade = checkResult
+          ? (checkResult.suggested_grade ?? (
+              checkResult.correctness === 'correct' ? 2 :
+              checkResult.correctness === 'partial' ? 1 : 0
+            ))
+          : 0
+        const autoGradeLabel = gradeLabelMap[autoGrade] || 'Again'
 
-          {scheduleFeedback && (
-            <div className="schedule-feedback">{scheduleFeedback}</div>
-          )}
+        return (
+          <>
+            {/* Ask AI Tutor — prominent, before grading */}
+            <button
+              className="btn btn-primary tutor-toggle"
+              onClick={() => setShowTutor(!showTutor)}
+              style={{ marginTop: '12px' }}
+            >
+              {showTutor ? 'Hide AI Tutor' : 'Ask AI Tutor'}
+            </button>
 
-          <button
-            className="btn btn-secondary tutor-toggle"
-            onClick={() => setShowTutor(!showTutor)}
-          >
-            {showTutor ? 'Hide AI Tutor' : 'Ask AI Tutor'}
-          </button>
-        </>
-      )}
+            {/* Continue button with auto-grade */}
+            <button
+              className="continue-btn"
+              onClick={() => handleGrade(autoGrade)}
+            >
+              Continue &rarr; {autoGradeLabel}
+            </button>
+
+            {scheduleFeedback && (
+              <div className="schedule-feedback">{scheduleFeedback}</div>
+            )}
+
+            {/* Grade override buttons */}
+            <div className="grade-override-label">Or self-assess:</div>
+            <div className="study-actions override">
+              {[
+                { grade: 0, label: 'Again', interval: intervals.again, cls: 'btn-again' },
+                { grade: 1, label: 'Hard', interval: intervals.hard, cls: 'btn-hard' },
+                { grade: 2, label: 'Good', interval: intervals.good, cls: 'btn-good' },
+                { grade: 3, label: 'Easy', interval: intervals.easy, cls: 'btn-easy' },
+              ].map((btn) => (
+                <button
+                  key={btn.grade}
+                  className={`btn ${btn.cls}`}
+                  onClick={() => handleGrade(btn.grade)}
+                >
+                  {btn.label}
+                  <span className="grade-label">{btn.interval} ({btn.grade + 1})</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )
+      })()}
 
       {/* Tutor toggle before answer for non-MCQ */}
       {!showAnswer && !isMcq && (

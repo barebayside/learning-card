@@ -126,6 +126,27 @@ body {
   text-align: center;
 }
 
+.stat-card-clickable {
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  border: 1px solid transparent;
+}
+
+.stat-card-clickable:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(136, 136, 204, 0.3);
+  border-color: #8888cc;
+}
+
+.stat-card-clickable:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.stat-card-clickable:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 .stat-number {
   font-size: 36px;
   font-weight: 700;
@@ -853,6 +874,50 @@ body {
   margin-top: 8px;
 }
 
+/* Continue button — prominent auto-grade action */
+.continue-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  background: #4a4a8a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.continue-btn:hover {
+  background: #5a5aaa;
+}
+
+/* "Or self-assess:" label above override grade buttons */
+.grade-override-label {
+  text-align: center;
+  font-size: 12px;
+  color: #7a7a92;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+/* Override grade buttons — smaller, secondary styling */
+.study-actions.override {
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.study-actions.override .btn {
+  padding: 8px 6px;
+  font-size: 12px;
+}
+
+.study-actions.override .grade-label {
+  font-size: 10px;
+}
+
 /* MCQ option buttons */
 .mcq-option-btn {
   display: block;
@@ -1392,6 +1457,16 @@ body {
   .study-actions .btn {
     padding: 14px;
     font-size: 15px;
+  }
+
+  /* Override grade buttons on small phones: 2-col grid */
+  .study-actions.override {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .study-actions.override .btn {
+    padding: 10px 6px;
+    font-size: 12px;
   }
 
   /* Question text */

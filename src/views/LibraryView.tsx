@@ -32,6 +32,10 @@ export default function LibraryView() {
   const [editType, setEditType] = useState('')
   const [editDifficulty, setEditDifficulty] = useState('')
 
+  // Preview modal state
+  const [previewCard, setPreviewCard] = useState<Card | null>(null)
+  const [previewShowAnswer, setPreviewShowAnswer] = useState(false)
+
   // Reschedule state
   const [reschedulingCard, setReschedulingCard] = useState<number | null>(null)
 
@@ -145,6 +149,11 @@ export default function LibraryView() {
     } catch (e: any) {
       setError(e.message)
     }
+  }
+
+  function openPreview(card: Card) {
+    setPreviewCard(card)
+    setPreviewShowAnswer(false)
   }
 
   function toggleSource(sourceName: string) {
@@ -273,7 +282,11 @@ export default function LibraryView() {
                               onChange={() => toggleCardSelection(card.id)}
                             />
                           </td>
-                          <td title={card.question_text}>
+                          <td
+                            title={card.question_text}
+                            className="library-question-cell"
+                            onClick={() => openPreview(card)}
+                          >
                             {card.question_text.length > 60
                               ? card.question_text.slice(0, 60) + '...'
                               : card.question_text}
@@ -419,6 +432,66 @@ export default function LibraryView() {
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={() => setEditingCard(null)}>Cancel</button>
               <button className="btn btn-primary" onClick={handleSaveEdit}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {previewCard && (
+        <div className="modal-overlay" onClick={() => setPreviewCard(null)}>
+          <div className="modal-content preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span className="badge badge-type">{previewCard.question_type}</span>
+                <span className={`badge badge-${previewCard.difficulty_tier}`}>{previewCard.difficulty_tier}</span>
+              </div>
+              <button className="close-btn" onClick={() => setPreviewCard(null)}>x</button>
+            </div>
+
+            <div className="preview-body">
+              <div className="preview-section">
+                <div className="preview-label">QUESTION</div>
+                <div className="preview-text">{previewCard.question_text}</div>
+              </div>
+
+              {previewCard.question_type === 'mcq' && previewCard.options_json && (
+                <div className="preview-options">
+                  {JSON.parse(previewCard.options_json).map((opt: string, i: number) => (
+                    <div key={i} className="preview-option">{opt}</div>
+                  ))}
+                </div>
+              )}
+
+              {!previewShowAnswer ? (
+                <button
+                  className="btn btn-primary"
+                  style={{ width: '100%', padding: '14px', marginTop: '16px', fontSize: '16px' }}
+                  onClick={() => setPreviewShowAnswer(true)}
+                >
+                  Show Answer
+                </button>
+              ) : (
+                <>
+                  <div className="preview-section" style={{ marginTop: '16px' }}>
+                    <div className="preview-label">ANSWER</div>
+                    <div className="preview-text preview-answer-text">{previewCard.answer_text}</div>
+                  </div>
+
+                  {previewCard.explanation && (
+                    <div className="preview-section" style={{ marginTop: '12px' }}>
+                      <div className="preview-label">EXPLANATION</div>
+                      <div className="preview-text" style={{ color: '#9898b0' }}>{previewCard.explanation}</div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="preview-footer">
+              <div style={{ fontSize: '12px', color: '#7a7a92' }}>
+                {previewCard.topic_title} &middot; {previewCard.card_state} &middot; {stepLabel(previewCard)} &middot; {formatDueDate(previewCard)}
+              </div>
             </div>
           </div>
         </div>

@@ -715,13 +715,6 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
               >
                 {isChecking ? 'Checking...' : 'Check Answer (Enter)'}
               </button>
-              <button
-                className="voice-btn"
-                onClick={() => textareaRef.current?.focus()}
-                title="Use your device's voice input (Samsung mic / Win+H)"
-              >
-                🎤
-              </button>
             </div>
           </div>
         )}

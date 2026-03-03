@@ -13,7 +13,6 @@ export default function TutorSidebar({ cardId, onClose }: Props) {
   const [isStreaming, setIsStreaming] = useState(false)
   const [conversationId, setConversationId] = useState(0)
   const messagesEnd = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
   const prevCardId = useRef(cardId)
 
   // Reset conversation when card changes
@@ -102,7 +101,6 @@ export default function TutorSidebar({ cardId, onClose }: Props) {
 
       <div className="tutor-input-area">
         <input
-          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -111,13 +109,6 @@ export default function TutorSidebar({ cardId, onClose }: Props) {
           placeholder="Ask a question..."
           disabled={isStreaming}
         />
-        <button
-          className="voice-btn"
-          onClick={() => inputRef.current?.focus()}
-          title="Use your device's voice input (Samsung mic / Win+H)"
-        >
-          🎤
-        </button>
         <button
           className="btn btn-primary"
           onClick={() => sendMessage(input)}

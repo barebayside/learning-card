@@ -248,11 +248,11 @@ export async function startStudySession(sourceId?: number, topicId?: number, due
 
   let cards: any[] = []
 
-  // 1. Learning/relearning cards due now
+  // 1. Learning/relearning cards due now (skip learning when dueOnly — dashboard due_count only counts review+relearning)
   let query = supabase
     .from('cards')
     .select('*, topics(title, source_id, content_sources:source_id(filename))')
-    .in('card_state', ['learning', 'relearning'])
+    .in('card_state', dueOnly ? ['relearning'] : ['learning', 'relearning'])
     .eq('is_suspended', false)
     .lte('due_date', now)
     .limit(limit)

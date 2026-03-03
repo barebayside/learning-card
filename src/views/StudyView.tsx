@@ -101,8 +101,6 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
   const [userAnswer, setUserAnswer] = useState('')
   const [isChecking, setIsChecking] = useState(false)
   const [checkResult, setCheckResult] = useState<CheckResult | null>(null)
-  const [isListening, setIsListening] = useState(false)
-  const [interimTranscript, setInterimTranscript] = useState('')
   const [selectedMcqOption, setSelectedMcqOption] = useState<string | null>(null)
   const [scheduleFeedback, setScheduleFeedback] = useState('')
 
@@ -119,7 +117,6 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
   const [merging, setMerging] = useState(false)
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const recognitionRef = useRef<any>(null)
 
   useEffect(() => {
     loadSources()
@@ -244,12 +241,6 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
     setSelectedMcqOption(null)
     setScheduleFeedback('')
     setIsChecking(false)
-    setInterimTranscript('')
-    if (recognitionRef.current) {
-      recognitionRef.current.stop()
-      recognitionRef.current = null
-    }
-    setIsListening(false)
   }
 
   const handleGrade = useCallback(async (grade: number) => {
@@ -323,83 +314,6 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
     } finally {
       setIsChecking(false)
     }
-  }
-
-  function startListening() {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SpeechRecognition) {
-      setError('Voice input not supported in this browser. Try Chrome or Edge.')
-      return
-    }
-
-    setError('')
-    setInterimTranscript('')
-
-    const recognition = new SpeechRecognition()
-    recognition.continuous = true
-    recognition.interimResults = true
-    recognition.lang = 'en-US'
-
-    recognition.onresult = (event: any) => {
-      let finalText = ''
-      let interimText = ''
-
-      for (let i = 0; i < event.results.length; i++) {
-        const result = event.results[i]
-        if (result.isFinal) {
-          finalText += result[0].transcript
-        } else {
-          interimText += result[0].transcript
-        }
-      }
-
-      // Commit final results to the answer field
-      if (finalText) {
-        setUserAnswer((prev) => {
-          // Only append if we haven't already added this text
-          const trimmedPrev = prev.trim()
-          const trimmedFinal = finalText.trim()
-          if (trimmedPrev && !trimmedPrev.endsWith(trimmedFinal)) {
-            return trimmedPrev + ' ' + trimmedFinal
-          }
-          return trimmedFinal || trimmedPrev
-        })
-      }
-
-      // Show interim (in-progress) transcript as live preview
-      setInterimTranscript(interimText)
-    }
-
-    recognition.onend = () => {
-      setIsListening(false)
-      setInterimTranscript('')
-      recognitionRef.current = null
-    }
-
-    recognition.onerror = (event: any) => {
-      setIsListening(false)
-      setInterimTranscript('')
-      recognitionRef.current = null
-      const errorMap: Record<string, string> = {
-        'not-allowed': 'Microphone access denied. Please allow microphone access in your browser settings.',
-        'no-speech': 'No speech detected. Please try again.',
-        'audio-capture': 'No microphone found. Please connect a microphone.',
-        'network': 'Network error during voice recognition.',
-      }
-      setError(errorMap[event.error] || `Voice input error: ${event.error}`)
-    }
-
-    recognition.start()
-    recognitionRef.current = recognition
-    setIsListening(true)
-  }
-
-  function stopListening() {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop()
-    }
-    setIsListening(false)
-    setInterimTranscript('')
   }
 
   // --- Edit & context functions ---
@@ -792,12 +706,6 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
                 }
               }}
             />
-            {isListening && (
-              <div className="voice-transcript-preview">
-                <span className="listening-dot" /> Listening{interimTranscript ? ': ' : '...'}
-                {interimTranscript && <em>{interimTranscript}</em>}
-              </div>
-            )}
             <div className="answer-input-controls">
               <button
                 className="btn btn-primary"
@@ -808,11 +716,11 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
                 {isChecking ? 'Checking...' : 'Check Answer (Enter)'}
               </button>
               <button
-                className={`voice-btn ${isListening ? 'listening' : ''}`}
-                onClick={isListening ? stopListening : startListening}
-                title={isListening ? 'Stop listening' : 'Voice input'}
+                className="voice-btn"
+                onClick={() => textareaRef.current?.focus()}
+                title="Use your device's voice input (Samsung mic / Win+H)"
               >
-                {isListening ? '⏹' : '🎤'}
+                🎤
               </button>
             </div>
           </div>

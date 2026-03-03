@@ -125,7 +125,7 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
   useEffect(() => {
     if (autoStart) {
       onAutoStartConsumed?.()
-      startSession(undefined)
+      startSession(undefined, undefined, true)
     }
   }, [autoStart])
 
@@ -157,10 +157,10 @@ export default function StudyView({ autoStart, onAutoStartConsumed }: StudyViewP
     }
   }
 
-  async function startSession(sourceId?: number, topicId?: number) {
+  async function startSession(sourceId?: number, topicId?: number, dueOnly?: boolean) {
     setError('')
     try {
-      const session = await startStudySession(sourceId, topicId)
+      const session = await startStudySession(sourceId, topicId, dueOnly)
       setCards(session.cards || [])
       setCurrentIndex(0)
       resetCardState()

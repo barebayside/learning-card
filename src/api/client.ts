@@ -228,7 +228,7 @@ let sessionCardsStudied = 0
 let sessionCardsCorrect = 0
 let sessionTotalTimeMs = 0
 
-export async function startStudySession(sourceId?: number, topicId?: number) {
+export async function startStudySession(sourceId?: number, topicId?: number, dueOnly?: boolean) {
   // Create session
   const { data: session, error: sessErr } = await supabase
     .from('study_sessions')
@@ -281,9 +281,9 @@ export async function startStudySession(sourceId?: number, topicId?: number) {
     if (dueCards) cards.push(...dueCards)
   }
 
-  // 3. New cards
+  // 3. New cards (skip when dueOnly)
   remaining = limit - cards.length
-  if (remaining > 0) {
+  if (remaining > 0 && !dueOnly) {
     let q3 = supabase
       .from('cards')
       .select('*, topics(title, source_id, content_sources:source_id(filename))')

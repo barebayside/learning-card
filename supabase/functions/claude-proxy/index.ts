@@ -257,6 +257,58 @@ Deno.serve(async (req: Request) => {
         })
       }
 
+      case 'extract-pdf-text': {
+        const { pdf_base64 } = body
+        if (!pdf_base64) {
+          return new Response(JSON.stringify({ error: 'Missing pdf_base64' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          })
+        }
+
+        const pdfResponse = await fetch(ANTHROPIC_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 8192,
+            messages: [{
+              role: 'user',
+              content: [
+                {
+                  type: 'document',
+                  source: {
+                    type: 'base64',
+                    media_type: 'application/pdf',
+                    data: pdf_base64,
+                  },
+                },
+                {
+                  type: 'text',
+                  text: 'Extract ALL text content from this PDF document. Return ONLY the raw text, preserving the document structure (headings, paragraphs, lists). Do not summarize or interpret — just extract the text exactly as it appears.',
+                },
+              ],
+            }],
+          }),
+        })
+
+        if (!pdfResponse.ok) {
+          const err = await pdfResponse.text()
+          throw new Error(`Claude API error ${pdfResponse.status}: ${err}`)
+        }
+
+        const pdfData = await pdfResponse.json()
+        const extractedText = pdfData.content[0].text
+
+        return new Response(JSON.stringify({ text: extractedText }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
       case 'tutor-chat': {
         const { system_prompt, messages } = body
         const response = await callClaudeConversation(system_prompt, messages, 1024)
